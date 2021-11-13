@@ -1,15 +1,15 @@
 package ru.itmo.coffee.constructor.controller
 
-import ru.itmo.coffee.constructor.repository.RecipeComponentJpaRepository
 import org.springframework.web.bind.annotation.*
 import ru.itmo.coffee.MessageResponse
+import ru.itmo.coffee.MessageWithIdResponse
 import ru.itmo.coffee.constructor.dto.CoffeeRecipeDTO
 import ru.itmo.coffee.constructor.entity.CoffeeRecipe
 import ru.itmo.coffee.constructor.entity.Ingredient
-import ru.itmo.coffee.constructor.repository.CoffeeRecipeJpaRepository
 import ru.itmo.coffee.constructor.repository.IngredientJpaRepository
 import ru.itmo.coffee.constructor.service.CoffeeRecipeService
-import java.util.*
+import ru.itmo.coffee.notFound
+import javax.persistence.EntityNotFoundException
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 @RestController
@@ -24,14 +24,20 @@ class CoffeeConstructorController (
         ingredientJpaRepository.findAll().toList()
 
     @GetMapping("ingredients/{id}")
-    fun getIngredient(@PathVariable("id") id: Long): Optional<Ingredient> = ingredientJpaRepository.findById(id);
+    fun getIngredient(@PathVariable("id") id: Long): Ingredient =
+        ingredientJpaRepository.findById(id).orElseThrow {
+            EntityNotFoundException(notFound("Ingredient", id)) }
 
     @GetMapping("recipes")
     fun getCoffeeRecipes(): List<CoffeeRecipe> =
         coffeeRecipeService.getAllRecipes()
 
+    @GetMapping("recipes/{id}")
+    fun getCoffeeRecipe(@PathVariable("id") id: Long): CoffeeRecipe =
+        coffeeRecipeService.getRecipe(id)
+
     @PostMapping("recipes")
-    fun createCoffeeRecipe(@RequestBody payload: CoffeeRecipeDTO): MessageResponse =
+    fun createCoffeeRecipe(@RequestBody payload: CoffeeRecipeDTO): MessageWithIdResponse =
         coffeeRecipeService.createRecipe(payload)
 
     @PutMapping("recipes/{id}")
@@ -41,5 +47,4 @@ class CoffeeConstructorController (
     @DeleteMapping("recipes/{id}")
     fun deleteCustomCoffeeRecipe(@PathVariable("id") id: Long) =
         coffeeRecipeService.deleteRecipe(id)
-
 }

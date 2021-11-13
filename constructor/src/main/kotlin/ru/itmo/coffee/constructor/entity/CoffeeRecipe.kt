@@ -1,5 +1,6 @@
 package ru.itmo.coffee.constructor.entity
 
+import java.time.Instant
 import java.time.ZonedDateTime
 import javax.persistence.*
 
@@ -9,8 +10,8 @@ class CoffeeRecipe(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0,
         var name: String = "",
-        var creationTime: ZonedDateTime = ZonedDateTime.now(),
-        var modificationTime: ZonedDateTime = ZonedDateTime.now(),
-        @OneToMany(fetch = FetchType.LAZY)
+        var creationTime: Instant = Instant.now(),
+        var modificationTime: Instant = Instant.now(),
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "coffee")
         var components: List<RecipeComponent> = mutableListOf(),
 )

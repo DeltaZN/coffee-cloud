@@ -1,5 +1,6 @@
 package ru.itmo.coffee.store.kafka
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.LongDeserializer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -22,7 +23,11 @@ open class KafkaConsumerConfig {
     private val kafkaGroupId: String = ""
 
     @Bean
-    open fun objectMapper() = ObjectMapper()
+    open fun objectMapper(): ObjectMapper {
+        val mapper = ObjectMapper()
+        mapper.registerModule(JavaTimeModule())
+        return mapper
+    }
 
     @Bean
     open fun batchFactory(

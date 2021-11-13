@@ -11,5 +11,7 @@ class Ingredient(
     var cost: Double = 0.0,
     var calories: Double = 0.0,
     @Column(name = "volume_ml", nullable = false)
-    var volumeMl: Double = 0.0
+    var volumeMl: Double = 0.0,
+    @OneToMany(mappedBy = "ingredient")
+    var recipeComponents: MutableList<RecipeComponent> = mutableListOf(),
 )

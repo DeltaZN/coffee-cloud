@@ -1,4 +1,4 @@
-package ru.itmo.coffee
+package ru.itmo.coffee.kafka
 
 const val KAFKA_INGREDIENTS_TOPIC = "server.ingredients"
 

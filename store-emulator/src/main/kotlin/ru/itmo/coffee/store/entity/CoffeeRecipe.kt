@@ -1,5 +1,6 @@
 package ru.itmo.coffee.store.entity
 
+import java.time.Instant
 import java.time.ZonedDateTime
 import javax.persistence.*
 
@@ -8,8 +9,8 @@ class CoffeeRecipe(
         @Id
         var id: Long = 0,
         var name: String = "",
-        var creationTime: ZonedDateTime = ZonedDateTime.now(),
-        var modificationTime: ZonedDateTime = ZonedDateTime.now(),
+        var creationTime: Instant = Instant.now(),
+        var modificationTime: Instant = Instant.now(),
         @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
         var components: List<RecipeComponent> = mutableListOf(),
         @OneToOne(mappedBy = "recipe")

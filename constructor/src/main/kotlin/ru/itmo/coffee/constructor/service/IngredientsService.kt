@@ -2,23 +2,25 @@ package ru.itmo.coffee.constructor.service
 
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
-import ru.itmo.coffee.IngredientMessageKafkaDTO
-import ru.itmo.coffee.KAFKA_INGREDIENTS_TOPIC
-import ru.itmo.coffee.MessageType
+import ru.itmo.coffee.kafka.IngredientMessageKafkaDTO
+import ru.itmo.coffee.kafka.KAFKA_INGREDIENTS_TOPIC
+import ru.itmo.coffee.kafka.MessageType
 import ru.itmo.coffee.constructor.entity.Ingredient
 import ru.itmo.coffee.constructor.repository.IngredientJpaRepository
+import ru.itmo.coffee.constructor.repository.RecipeComponentJpaRepository
 import javax.persistence.EntityNotFoundException
 
 @Service
 class IngredientsService(
     private val ingredientJpaRepository: IngredientJpaRepository,
+    private val recipeComponentJpaRepository: RecipeComponentJpaRepository,
 ) {
     @KafkaListener(id = "constructor_ingredients", topics = [KAFKA_INGREDIENTS_TOPIC], containerFactory = "singleFactory")
     fun consumeIngredient(dto: IngredientMessageKafkaDTO) {
         when (dto.action) {
             MessageType.CREATE -> createIngredient(dto)
             MessageType.EDIT -> editIngredient(dto)
-            MessageType.DELETE -> ingredientJpaRepository.deleteById(dto.ingredientId)
+            MessageType.DELETE -> deleteIngredient(dto)
         }
     }
 
@@ -46,5 +48,13 @@ class IngredientsService(
         dto.ingredient?.volumesMl?.let { entity.volumeMl = it }
 
         ingredientJpaRepository.save(entity)
+    }
+
+    private fun deleteIngredient(dto: IngredientMessageKafkaDTO) {
+        val ingredient = ingredientJpaRepository.findById(dto.ingredientId).orElseThrow {
+            EntityNotFoundException("Ingredient with id ${dto.ingredientId} wasn't found")
+        }
+        ingredient.recipeComponents.forEach(recipeComponentJpaRepository::delete)
+        ingredientJpaRepository.delete(ingredient)
     }
 }

@@ -2,7 +2,9 @@ package ru.itmo.coffee.store.service
 
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
-import ru.itmo.coffee.*
+import ru.itmo.coffee.kafka.KAFKA_RECIPES_TOPIC
+import ru.itmo.coffee.kafka.MessageType
+import ru.itmo.coffee.kafka.RecipeMessageKafkaDTO
 import ru.itmo.coffee.store.entity.Coffee
 import ru.itmo.coffee.store.entity.CoffeeRecipe
 import ru.itmo.coffee.store.entity.CoffeeType
@@ -11,6 +13,7 @@ import ru.itmo.coffee.store.repository.CoffeeJpaRepository
 import ru.itmo.coffee.store.repository.CoffeeRecipeJpaRepository
 import ru.itmo.coffee.store.repository.IngredientJpaRepository
 import ru.itmo.coffee.store.repository.RecipeComponentJpaRepository
+import java.time.Instant
 import java.time.ZonedDateTime
 import javax.persistence.EntityNotFoundException
 
@@ -35,8 +38,8 @@ class CoffeeRecipeService(
             val entity = CoffeeRecipe(
                 dto.recipeId,
                 dto.coffeeRecipe?.name ?: "",
-                dto.coffeeRecipe?.creationTime ?: ZonedDateTime.now(),
-                dto.coffeeRecipe?.modificationTime ?: ZonedDateTime.now(),
+                dto.coffeeRecipe?.creationTime ?: Instant.now(),
+                dto.coffeeRecipe?.modificationTime ?: Instant.now(),
                 mutableListOf(),
             )
             coffeeRecipeJpaRepository.save(entity)
@@ -58,30 +61,36 @@ class CoffeeRecipeService(
     }
 
     private fun editRecipe(dto: RecipeMessageKafkaDTO) {
-        val entity = coffeeRecipeJpaRepository.findById(dto.recipeId).orElseThrow {
-            EntityNotFoundException("Coffee recipe with id ${dto.recipeId} wasn't found")
-        }
+        val optional = coffeeRecipeJpaRepository.findById(dto.recipeId)
 
-        val components = dto.coffeeRecipe?.components?.map { c -> RecipeComponent(
-            0,
-            entity,
-            ingredientJpaRepository.findById(c.ingredientId).orElseThrow {
-                EntityNotFoundException("Ingredient with id ${c.ingredientId} wasn't found")
-            },
-            c.quantity,
-            c.insertionOrder,
-        ) }
-        components?.forEach(recipeComponentJpaRepository::save)
+        if (optional.isPresent) {
+            val entity = optional.get()
 
-        dto.coffeeRecipe?.name?.let { entity.name = it }
-        dto.coffeeRecipe?.modificationTime?.let { entity.modificationTime = it }
-        dto.coffeeRecipe?.components?.let { entity.components = components!! }
-        coffeeRecipeJpaRepository.save(entity)
+            val components = dto.coffeeRecipe?.components?.map { c ->
+                RecipeComponent(
+                    0,
+                    entity,
+                    ingredientJpaRepository.findById(c.ingredientId).orElseThrow {
+                        EntityNotFoundException("Ingredient with id ${c.ingredientId} wasn't found")
+                    },
+                    c.quantity,
+                    c.insertionOrder,
+                )
+            }
+            components?.forEach(recipeComponentJpaRepository::save)
 
-        // TODO update the cost
-        dto.coffeeRecipe?.components?.let {
-            entity.coffee!!.cost = 0.0
-            coffeeJpaRepository.save(entity.coffee!!)
+            dto.coffeeRecipe?.name?.let { entity.name = it }
+            dto.coffeeRecipe?.modificationTime?.let { entity.modificationTime = it }
+            dto.coffeeRecipe?.components?.let { entity.components = components!! }
+            coffeeRecipeJpaRepository.save(entity)
+
+            // TODO update the cost
+            dto.coffeeRecipe?.components?.let {
+                entity.coffee!!.cost = 0.0
+                coffeeJpaRepository.save(entity.coffee!!)
+            }
+        } else {
+            createRecipe(dto)
         }
     }
 

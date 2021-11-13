@@ -1,5 +1,6 @@
-package ru.itmo.coffee
+package ru.itmo.coffee.kafka
 
+import java.time.Instant
 import java.time.ZonedDateTime
 
 const val KAFKA_RECIPES_TOPIC = "server.recipes"
@@ -12,8 +13,8 @@ data class RecipeMessageKafkaDTO(
 
 data class CoffeeRecipeKafkaDTO(
     val name: String? = null,
-    val creationTime: ZonedDateTime? = null,
-    val modificationTime: ZonedDateTime? = null,
+    val creationTime: Instant? = null,
+    val modificationTime: Instant? = null,
     val components: List<RecipeComponentKafkaDTO>? = null,
 )
 
