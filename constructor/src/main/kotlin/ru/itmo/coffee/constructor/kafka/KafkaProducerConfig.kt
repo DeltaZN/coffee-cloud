@@ -10,6 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.converter.StringJsonMessageConverter
 import org.springframework.kafka.support.serializer.JsonSerializer
+import ru.itmo.coffee.RecipeMessageKafkaDTO
 
 @Configuration
 open class KafkaProducerConfig {
@@ -29,39 +30,15 @@ open class KafkaProducerConfig {
         return props
     }
 
-//    @Bean
-//    open fun producerBorrowerDataFactory(): ProducerFactory<Long, BorrowerData> {
-//        return DefaultKafkaProducerFactory(producerConfigs())
-//    }
-//
-//    @Bean
-//    open fun kafkaBorrowerDataTemplate(): KafkaTemplate<Long, BorrowerData> {
-//        val template: KafkaTemplate<Long, BorrowerData> = KafkaTemplate(producerBorrowerDataFactory())
-//        template.setMessageConverter(StringJsonMessageConverter())
-//        return template
-//    }
-//
-//    @Bean
-//    open fun producerPaymentFactory(): ProducerFactory<Long, PaymentDto> {
-//        return DefaultKafkaProducerFactory(producerConfigs())
-//    }
-//
-//    @Bean
-//    open fun kafkaPaymentTemplate(): KafkaTemplate<Long, PaymentDto> {
-//        val template: KafkaTemplate<Long, PaymentDto> = KafkaTemplate(producerPaymentFactory())
-//        template.setMessageConverter(StringJsonMessageConverter())
-//        return template
-//    }
-//
-//    @Bean
-//    open fun producerLoanRequestFactory(): ProducerFactory<Long, LoanRequestDto> {
-//        return DefaultKafkaProducerFactory(producerConfigs())
-//    }
-//
-//    @Bean
-//    open fun kafkaLoanRequestTemplate(): KafkaTemplate<Long, LoanRequestDto> {
-//        val template: KafkaTemplate<Long, LoanRequestDto> = KafkaTemplate(producerLoanRequestFactory())
-//        template.setMessageConverter(StringJsonMessageConverter())
-//        return template
-//    }
+    @Bean
+    open fun producerRecipeFactory(): ProducerFactory<Long, RecipeMessageKafkaDTO> {
+        return DefaultKafkaProducerFactory(producerConfigs())
+    }
+
+    @Bean
+    open fun kafkaRecipesTemplate(): KafkaTemplate<Long, RecipeMessageKafkaDTO> {
+        val template: KafkaTemplate<Long, RecipeMessageKafkaDTO> = KafkaTemplate(producerRecipeFactory())
+        template.messageConverter = StringJsonMessageConverter()
+        return template
+    }
 }

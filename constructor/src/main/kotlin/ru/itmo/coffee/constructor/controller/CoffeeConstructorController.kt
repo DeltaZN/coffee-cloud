@@ -2,12 +2,13 @@ package ru.itmo.coffee.constructor.controller
 
 import ru.itmo.coffee.constructor.repository.RecipeComponentJpaRepository
 import org.springframework.web.bind.annotation.*
-import ru.itmo.coffee.constructor.dto.ConstructorMessageDTO
-import ru.itmo.coffee.constructor.dto.MessageResponse
+import ru.itmo.coffee.MessageResponse
+import ru.itmo.coffee.constructor.dto.CoffeeRecipeDTO
 import ru.itmo.coffee.constructor.entity.CoffeeRecipe
 import ru.itmo.coffee.constructor.entity.Ingredient
 import ru.itmo.coffee.constructor.repository.CoffeeRecipeJpaRepository
 import ru.itmo.coffee.constructor.repository.IngredientJpaRepository
+import ru.itmo.coffee.constructor.service.CoffeeRecipeService
 import java.util.*
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
@@ -15,28 +16,30 @@ import java.util.*
 @RequestMapping("/api/constructor")
 class CoffeeConstructorController (
     private val ingredientJpaRepository: IngredientJpaRepository,
-    private val coffeeRecipeJpaRepository: CoffeeRecipeJpaRepository,
-    private val recipeComponentJpaRepository: RecipeComponentJpaRepository,
+    private val coffeeRecipeService: CoffeeRecipeService,
 ) {
 
     @GetMapping("ingredients")
-    fun getIngredients(): List<Ingredient> = ingredientJpaRepository.findAll().toList()
+    fun getIngredients(): List<Ingredient> =
+        ingredientJpaRepository.findAll().toList()
 
     @GetMapping("ingredients/{id}")
     fun getIngredient(@PathVariable("id") id: Long): Optional<Ingredient> = ingredientJpaRepository.findById(id);
 
     @GetMapping("recipes")
-    fun getCoffeeRecipes(): List<CoffeeRecipe> = coffeeRecipeJpaRepository.findAll().toList()
+    fun getCoffeeRecipes(): List<CoffeeRecipe> =
+        coffeeRecipeService.getAllRecipes()
 
     @PostMapping("recipes")
-    fun addCoffeeRecipe(@RequestBody payload: ConstructorMessageDTO): MessageResponse {
-//        coffeeRecipeJpaRepository.save()
-        return MessageResponse("Successfully added a coffee recipe!")
-    }
+    fun createCoffeeRecipe(@RequestBody payload: CoffeeRecipeDTO): MessageResponse =
+        coffeeRecipeService.createRecipe(payload)
 
-    @PutMapping("recipes")
-    fun editCustomCoffee(@RequestBody payload: ConstructorMessageDTO): MessageResponse {
-//        coffeeService.editCustomCoffee(payload)
-        return MessageResponse("Successfully edited a coffee recipe!")
-    }
+    @PutMapping("recipes/{id}")
+    fun editCustomCoffeeRecipe(@PathVariable("id") id: Long, @RequestBody payload: CoffeeRecipeDTO): MessageResponse =
+        coffeeRecipeService.editRecipe(id, payload)
+
+    @DeleteMapping("recipes/{id}")
+    fun deleteCustomCoffeeRecipe(@PathVariable("id") id: Long) =
+        coffeeRecipeService.deleteRecipe(id)
+
 }

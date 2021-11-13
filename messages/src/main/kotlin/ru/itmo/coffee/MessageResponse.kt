@@ -1,4 +1,4 @@
-package ru.itmo.coffee.constructor.dto
+package ru.itmo.coffee
 
 data class MessageResponse(
     val message: String,
