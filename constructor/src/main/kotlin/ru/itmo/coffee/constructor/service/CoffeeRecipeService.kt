@@ -28,7 +28,8 @@ class CoffeeRecipeService(
     @Value("\${kafka.enabled}")
     private val kafkaEnabled: Boolean = false
 
-    fun getAllRecipes(): List<CoffeeRecipe> = coffeeRecipeJpaRepository.findAll().toList()
+    fun getAllRecipes(): List<CoffeeRecipe> =
+        coffeeRecipeJpaRepository.findAll().toList()
 
     fun getRecipe(id: Long): CoffeeRecipe = coffeeRecipeJpaRepository.findById(id)
         .orElseThrow { EntityNotFoundException(notFound("Recipe", id)) }
@@ -61,7 +62,13 @@ class CoffeeRecipeService(
             EntityNotFoundException(notFound("Recipe", id))
         }
         recipe.name?.let { entity.name = it }
-        recipe.components?.let { entity.components = it.map { dto -> mapRecipeComponentDTO(dto, entity) } }
+        recipe.components?.let {
+            entity.components.forEach { c ->
+                c.ingredient.recipeComponents.remove(c)
+                recipeComponentJpaRepository.delete(c)
+            }
+            entity.components = it.map { dto -> mapRecipeComponentDTO(dto, entity) }
+        }
         entity.modificationTime = Instant.now()
         entity.components.forEach(recipeComponentJpaRepository::save)
         coffeeRecipeJpaRepository.save(entity)

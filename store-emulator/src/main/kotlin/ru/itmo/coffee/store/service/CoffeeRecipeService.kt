@@ -42,8 +42,7 @@ class CoffeeRecipeService(
                 dto.coffeeRecipe?.modificationTime ?: Instant.now(),
                 mutableListOf(),
             )
-            coffeeRecipeJpaRepository.save(entity)
-            val components = dto.coffeeRecipe?.components?.map { c -> RecipeComponent(
+            dto.coffeeRecipe?.components?.map { c -> RecipeComponent(
                 0,
                 entity,
                 ingredientJpaRepository.findById(c.ingredientId).orElseThrow {
@@ -51,9 +50,7 @@ class CoffeeRecipeService(
                 },
                 c.quantity,
                 c.insertionOrder,
-            ) }
-            components?.forEach(recipeComponentJpaRepository::save)
-            coffeeRecipeJpaRepository.save(entity)
+            ) }?.let { entity.components = it }
             // TODO count the cost
             val coffee = Coffee(0, entity.name, 0.0, CoffeeType.USER, entity)
             coffeeJpaRepository.save(coffee)
@@ -77,12 +74,10 @@ class CoffeeRecipeService(
                     c.insertionOrder,
                 )
             }
-            components?.forEach(recipeComponentJpaRepository::save)
 
             dto.coffeeRecipe?.name?.let { entity.name = it }
             dto.coffeeRecipe?.modificationTime?.let { entity.modificationTime = it }
             dto.coffeeRecipe?.components?.let { entity.components = components!! }
-            coffeeRecipeJpaRepository.save(entity)
 
             // TODO update the cost
             dto.coffeeRecipe?.components?.let {

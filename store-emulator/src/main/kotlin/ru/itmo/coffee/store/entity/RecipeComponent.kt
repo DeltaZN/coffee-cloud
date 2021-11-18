@@ -1,5 +1,6 @@
 package ru.itmo.coffee.store.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import ru.itmo.coffee.store.entity.CoffeeRecipe
 import ru.itmo.coffee.store.entity.Ingredient
 import javax.persistence.*
@@ -10,9 +11,10 @@ class RecipeComponent(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
     @ManyToOne
-    val coffee: CoffeeRecipe? = null,
+    @JsonIgnore
+    var recipe: CoffeeRecipe? = null,
     @ManyToOne
-    val ingredient: Ingredient = Ingredient(),
+    var ingredient: Ingredient? = Ingredient(),
     val quantity: Double = 0.0,
     @Column(name = "insertion_order")
     val insertionOrder: Int = 0,

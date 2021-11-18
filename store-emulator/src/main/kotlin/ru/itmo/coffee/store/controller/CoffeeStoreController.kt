@@ -1,12 +1,10 @@
 package ru.itmo.coffee.store.controller
 
 import org.springframework.web.bind.annotation.*
-import ru.itmo.coffee.MessageResponse
 import ru.itmo.coffee.MessageWithIdResponse
+import ru.itmo.coffee.dto.IngredientDTO
 import ru.itmo.coffee.notFound
-import ru.itmo.coffee.store.dto.IngredientDTO
 import ru.itmo.coffee.store.entity.Coffee
-import ru.itmo.coffee.store.entity.Ingredient
 import ru.itmo.coffee.store.repository.CoffeeJpaRepository
 import ru.itmo.coffee.store.service.IngredientService
 import javax.persistence.EntityNotFoundException

@@ -1,5 +1,6 @@
 package ru.itmo.coffee.store.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -13,5 +14,6 @@ class Ingredient(
     @Column(name = "volume_ml", nullable = false)
     var volumeMl: Double = 0.0,
     @OneToMany(mappedBy = "ingredient")
+    @JsonIgnore
     var recipeComponents: MutableList<RecipeComponent> = mutableListOf(),
 )

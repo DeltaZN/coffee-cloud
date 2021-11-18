@@ -27,10 +27,10 @@ open class StoreApp(
     }
 
     private fun addDefaultCoffees() = listOf(
-        Coffee(0, "Cappuccino", 99.99, CoffeeType.STANDARD),
-        Coffee(0, "Latte", 109.99, CoffeeType.STANDARD),
-        Coffee(0, "Americano", 79.99, CoffeeType.STANDARD),
-        Coffee(0, "Raf", 109.99, CoffeeType.STANDARD),
+        Coffee(0, "Cappuccino", 99.99, CoffeeType.STANDARD, null),
+        Coffee(0, "Latte", 109.99, CoffeeType.STANDARD, null),
+        Coffee(0, "Americano", 79.99, CoffeeType.STANDARD, null),
+        Coffee(0, "Raf", 109.99, CoffeeType.STANDARD, null),
     ).forEach(coffeeJpaRepository::save)
 
     private fun addDefaultIngredients() = listOf(

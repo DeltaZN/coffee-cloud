@@ -8,10 +8,9 @@ data class CoffeeRecipeDTO(
 )
 
 data class CoffeeComponentDTO(
-    val id: Long,
-    val ingredientId: Long,
-    val insertionOrder: Int,
-    val quantity: Double,
+    val ingredientId: Long = 0,
+    val insertionOrder: Int = 0,
+    val quantity: Double = 0.0,
 )
 
 

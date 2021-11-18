@@ -15,5 +15,8 @@ class Coffee(
     var cost: Double = 0.0,
     var type: CoffeeType = CoffeeType.STANDARD,
     @OneToOne(cascade = [CascadeType.ALL])
+    @JoinTable(name = "emp_workstation",
+        joinColumns = [JoinColumn(name = "coffee_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "coffee_recipe_id", referencedColumnName = "id")])
     var recipe: CoffeeRecipe? = null,
 )

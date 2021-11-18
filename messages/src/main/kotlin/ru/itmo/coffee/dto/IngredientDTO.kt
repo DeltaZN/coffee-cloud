@@ -1,4 +1,4 @@
-package ru.itmo.coffee.store.dto
+package ru.itmo.coffee.dto
 
 data class IngredientDTO(
     val id: Long? = null,

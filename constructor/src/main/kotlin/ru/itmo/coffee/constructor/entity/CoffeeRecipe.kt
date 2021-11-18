@@ -12,6 +12,6 @@ class CoffeeRecipe(
         var name: String = "",
         var creationTime: Instant = Instant.now(),
         var modificationTime: Instant = Instant.now(),
-        @OneToMany(fetch = FetchType.LAZY, mappedBy = "coffee")
+        @OneToMany(fetch = FetchType.EAGER, mappedBy = "coffee")
         var components: List<RecipeComponent> = mutableListOf(),
 )
