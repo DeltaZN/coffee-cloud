@@ -23,9 +23,17 @@ open class KafkaProducerConfig {
     @Bean
     open fun producerConfigs(): Map<String, Any> {
         val props: MutableMap<String, Any> = HashMap()
+        val jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
+        val jaasCfg = String.format(jaasTemplate, "constructor", "12345678")
         props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaServer!!
+        props[ProducerConfig.ACKS_CONFIG] = "all"
         props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = LongSerializer::class.java
         props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        props["security.protocol"] = "SASL_SSL"
+        props["sasl.mechanism"] = "SCRAM-SHA-512"
+        props["sasl.jaas.config"] = jaasCfg
+        props["ssl.truststore.location"] = "/home/gsavin/client.truststore.jks"
+        props["ssl.truststore.password"] = "changeit"
         props[ProducerConfig.CLIENT_ID_CONFIG] = kafkaProducerId
         return props
     }

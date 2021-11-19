@@ -9,8 +9,7 @@ class HelloTest {
     fun test() {
         val restTemplate = RestTemplate()
         val fooResourceUrl = "http://localhost:8090/api/store/ingredients"
-        val response = restTemplate.getForObject(fooResourceUrl, Array<IngredientDTO>::class.java)
-        println()
+//        val response = restTemplate.getForObject(fooResourceUrl, Array<IngredientDTO>::class.java)
     }
 
 }

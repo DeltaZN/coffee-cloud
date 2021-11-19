@@ -9,6 +9,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
   profiles:
-    active: local
+    active: cloud
 server:
   port: 8090
